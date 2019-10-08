@@ -18,6 +18,10 @@ class ABootcampUnrealCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere)
+		class ULocationReportComponent* LocationReport;
+	
 public:
 	ABootcampUnrealCharacter();
 
@@ -61,6 +65,7 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void ReportLocation();
 	// End of APawn interface
 
 public:

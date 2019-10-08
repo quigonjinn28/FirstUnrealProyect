@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include <BootcampUnreal\LocationReportComponent.h>
 
 //////////////////////////////////////////////////////////////////////////
 // ABootcampUnrealCharacter
@@ -45,6 +46,7 @@ ABootcampUnrealCharacter::ABootcampUnrealCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	LocationReport = CreateDefaultSubobject<ULocationReportComponent>(TEXT("LocationReport"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,6 +76,14 @@ void ABootcampUnrealCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ABootcampUnrealCharacter::OnResetVR);
+
+	PlayerInputComponent->BindAction("ReportLocation", IE_Pressed, this, &ABootcampUnrealCharacter::ReportLocation);
+}
+
+void ABootcampUnrealCharacter::ReportLocation()
+{
+
+	LocationReport->ReportLocation();
 }
 
 
