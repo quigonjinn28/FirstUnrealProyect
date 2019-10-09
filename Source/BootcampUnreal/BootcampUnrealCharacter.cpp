@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include <BootcampUnreal\LocationReportComponent.h>
+#include "Components/PrimitiveComponent.h"
+#include "Engine/Engine.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ABootcampUnrealCharacter
@@ -47,6 +49,8 @@ ABootcampUnrealCharacter::ABootcampUnrealCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 	LocationReport = CreateDefaultSubobject<ULocationReportComponent>(TEXT("LocationReport"));
+
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABootcampUnrealCharacter::OnCompHit);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,5 +144,13 @@ void ABootcampUnrealCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void ABootcampUnrealCharacter::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
+	{
+		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("I Hit: %s"), *OtherActor->GetName()));
 	}
 }
