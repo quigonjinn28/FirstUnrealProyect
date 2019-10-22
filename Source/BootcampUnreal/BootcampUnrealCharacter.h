@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include <WoodLogs.h>
 #include "BootcampUnrealCharacter.generated.h"
+
 
 UCLASS(config=Game)
 class ABootcampUnrealCharacter : public ACharacter
@@ -15,13 +17,14 @@ class ABootcampUnrealCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+		class UCameraComponent* FollowCamera;
+
+public:
 
 	
-	
-public:
 	ABootcampUnrealCharacter();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -66,7 +69,10 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 	void ReportLocation();
+
+	void Grab();
 	// End of APawn interface
 
 public:
@@ -79,5 +85,16 @@ public:
 		class ULocationReportComponent* LocationReport;
 	UFUNCTION()
 		void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = HoldingWood)
+	bool IsHolding;
+	
+	UPROPERTY(EditAnywhere, Category = HoldingWood)
+	class AWoodLogs* HoldingWood;
 };
 

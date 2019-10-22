@@ -11,6 +11,10 @@
 #include <BootcampUnreal\LocationReportComponent.h>
 #include "Components/PrimitiveComponent.h"
 #include "Engine/Engine.h"
+#include "DrawDebugHelpers.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // ABootcampUnrealCharacter
@@ -51,6 +55,8 @@ ABootcampUnrealCharacter::ABootcampUnrealCharacter()
 	LocationReport = CreateDefaultSubobject<ULocationReportComponent>(TEXT("LocationReport"));
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABootcampUnrealCharacter::OnCompHit);
+
+	IsHolding = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +88,8 @@ void ABootcampUnrealCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ABootcampUnrealCharacter::OnResetVR);
 
 	PlayerInputComponent->BindAction("ReportLocation", IE_Pressed, this, &ABootcampUnrealCharacter::ReportLocation);
+	
+	PlayerInputComponent->BindAction("Grab", IE_Pressed, this, &ABootcampUnrealCharacter::Grab);
 }
 
 void ABootcampUnrealCharacter::ReportLocation()
@@ -154,3 +162,54 @@ void ABootcampUnrealCharacter::OnCompHit(UPrimitiveComponent* HitComp, AActor* O
 		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("I Hit: %s"), *OtherActor->GetName()));
 	}
 }
+
+void ABootcampUnrealCharacter::Grab()
+{
+	if (!IsHolding) {
+		
+		FVector Start = GetMesh()->GetSocketLocation("middle_01_r");
+		FVector ForwardVector = FollowCamera->GetForwardVector();
+		FVector End = ((ForwardVector * 600.f) + Start);
+
+		FHitResult Hit;
+
+		FComponentQueryParams DefaultComponentQueryParams;
+		FCollisionResponseParams DefaultResponseParam;
+
+		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
+
+		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, DefaultComponentQueryParams, DefaultResponseParam))
+		{
+			if (Hit.GetActor())
+			{
+				if (Hit.GetActor()->GetClass()->IsChildOf(AWoodLogs::StaticClass()))
+				{
+					HoldingWood = Cast<AWoodLogs>(Hit.GetActor());
+					if (HoldingWood)
+					{
+						HoldingWood->GrabOrRelease();
+						IsHolding = true;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		HoldingWood->GrabOrRelease();
+		IsHolding = false;
+		FVector ForwardVector = FollowCamera->GetForwardVector();
+		HoldingWood->Mesh->AddImpulse(ForwardVector * 1000 * HoldingWood->Mesh->GetMass());
+		HoldingWood = nullptr;
+	}
+	
+}
+
+void ABootcampUnrealCharacter::Tick(float DeltaTime)
+{
+	if (IsHolding)
+	{
+		HoldingWood->Mesh->SetWorldLocation(GetMesh()->GetSocketLocation("middle_01_r"));
+	}
+}
+
