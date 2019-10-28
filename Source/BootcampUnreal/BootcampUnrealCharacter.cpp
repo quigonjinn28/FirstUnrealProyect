@@ -57,6 +57,7 @@ ABootcampUnrealCharacter::ABootcampUnrealCharacter()
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABootcampUnrealCharacter::OnCompHit);
 
 	IsHolding = false;
+	IsFirstPerson = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -90,6 +91,8 @@ void ABootcampUnrealCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("ReportLocation", IE_Pressed, this, &ABootcampUnrealCharacter::ReportLocation);
 	
 	PlayerInputComponent->BindAction("Grab", IE_Pressed, this, &ABootcampUnrealCharacter::Grab);
+
+	PlayerInputComponent->BindAction("Camera", IE_Pressed, this, &ABootcampUnrealCharacter::ChangeCamera);
 }
 
 void ABootcampUnrealCharacter::ReportLocation()
@@ -203,6 +206,25 @@ void ABootcampUnrealCharacter::Grab()
 		HoldingWood = nullptr;
 	}
 	
+}
+
+void ABootcampUnrealCharacter::ChangeCamera()
+{
+	if (IsFirstPerson)
+	{
+		CameraBoom->TargetArmLength = 300.0f;
+		CameraBoom->SocketOffset = FVector(0);
+		this->bUseControllerRotationYaw = false;
+		CameraBoom->AttachTo(RootComponent);
+	}
+	else
+	{
+		CameraBoom->TargetArmLength = 0;
+		CameraBoom->SocketOffset = FVector(0,0,15);
+		this->bUseControllerRotationYaw = true;
+		CameraBoom->AttachTo(GetMesh(), "head");
+	}
+	IsFirstPerson = !IsFirstPerson;
 }
 
 void ABootcampUnrealCharacter::Tick(float DeltaTime)

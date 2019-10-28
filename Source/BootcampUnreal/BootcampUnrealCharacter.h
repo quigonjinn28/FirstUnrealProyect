@@ -73,6 +73,8 @@ protected:
 	void ReportLocation();
 
 	void Grab();
+
+	void ChangeCamera();
 	// End of APawn interface
 
 public:
@@ -91,6 +93,9 @@ public:
 
 private:
 
+	UPROPERTY(EditAnywhere, Category = ChangeCamera)
+	bool IsFirstPerson;
+	
 	UPROPERTY(EditAnywhere, Category = HoldingWood)
 	bool IsHolding;
 	
