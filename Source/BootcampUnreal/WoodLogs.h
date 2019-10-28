@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
+#include "Materials/Material.h"
 #include "WoodLogs.generated.h"
 
 UCLASS()

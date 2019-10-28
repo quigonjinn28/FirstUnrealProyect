@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 AWoodLogs::AWoodLogs()
@@ -19,8 +21,26 @@ AWoodLogs::AWoodLogs()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/ThirdPersonCPP/Blueprints/WoodSpawner/Cylinder.Cylinder"));
+	if (FoundMesh.Succeeded())
+	{
+		Mesh->SetStaticMesh(FoundMesh.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/ThirdPersonCPP/Materials/M_Wood_Walnut.M_Wood_Walnut"));
+	if (FoundMaterial.Succeeded())
+	{
+		Mesh->SetMaterial(0, FoundMaterial.Object);
+	}
+	
+	Mesh->SetWorldScale3D(FVector(0.2, 0.2, 0.4));
+	Mesh->SetWorldRotation(FRotator(66.873512, 89.663040, -90.232002));
+	Mesh->SetSimulatePhysics(true);
+
+
 	bHolding = false;
 	bGravity = true;
+
 }
 
 // Called when the game starts or when spawned
