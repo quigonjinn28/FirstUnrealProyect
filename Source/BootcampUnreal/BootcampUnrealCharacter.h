@@ -73,6 +73,8 @@ protected:
 	void ReportLocation();
 
 	void Grab();
+
+	void ChangeCamera();
 	// End of APawn interface
 
 public:
@@ -86,11 +88,17 @@ public:
 	UFUNCTION()
 		void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UPROPERTY(VisibleAnywhere, blueprintreadwrite, Category = Score)
+	int Score;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
 
+	UPROPERTY(EditAnywhere, Category = ChangeCamera)
+	bool IsFirstPerson;
+	
 	UPROPERTY(EditAnywhere, Category = HoldingWood)
 	bool IsHolding;
 	
